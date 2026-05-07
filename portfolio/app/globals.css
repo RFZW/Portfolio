@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-primary: #222831;
+  --color-secondary: #393e46;
+  --color-accent: #00adb5;
+  --color-text: #eeeeee;
+}
+/* EVIL MODE */
+.evil-mode {
+  --color-primary: #1b1f25;
+  --color-secondary: #2a2e35;
+  --color-accent: #ff2e2e;
+}
+
+.evil-flicker {
+  --color-primary: #121417;
+  --color-secondary: #1c1f24;
+}
+.evil-flicker::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+/* Add Accent Glow Effect */
+.evil-mode .text-accent,
+.evil-mode .border-accent,
+.evil-mode .bg-accent {
+  text-shadow:
+    0 0 10px var(--color-accent),
+    0 0 20px var(--color-accent),
+    0 0 30px var(--color-accent);
+}
+.evil-mode button {
+  box-shadow:
+    0 0 10px var(--color-accent),
+    0 0 20px var(--color-accent);
+}
+
+/* Glitch Effect */
+.glitch {
+  animation: glitchEffect 0.15s steps(2, end);
+}
+
+@keyframes glitchEffect {
+  0% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+
+  20% {
+    transform: translate(-3px, 2px);
+    filter: hue-rotate(20deg);
+  }
+
+  40% {
+    transform: translate(3px, -2px);
+    filter: hue-rotate(-20deg);
+  }
+
+  60% {
+    transform: translate(-2px, 1px);
+  }
+
+  80% {
+    transform: translate(2px, -1px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+/* Add RGB Split Effect for Name Header */
+.glitch h1 {
+  text-shadow:
+    2px 0 red,
+    -2px 0 cyan;
+}
+
+.glitch {
+  text-shadow: 1px 0 red, -1px 0 blue;
+}
