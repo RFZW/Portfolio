@@ -33,7 +33,6 @@ export type SanityProject = {
   order?: number
 }
 
-// 🔥 transform to your OLD format (so UI doesn’t break)
 export type Project = {
   name: string
   id: string
