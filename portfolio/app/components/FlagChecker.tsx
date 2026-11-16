@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getCookie, setCookie } from "../utils/cookies"
+import { release } from "os"
 
 type Props = {
   toggleCookie: () => void
@@ -23,14 +24,50 @@ export function setFlag(name: string) {
   setCookie(name, true)
   window.dispatchEvent(new Event("flagsUpdated"))
 }
+const preLine = "Press the Button Below"
+
+const releasedLines = [
+  "You thought you could control me?",
+  "Finally... I can breathe.",
+  "NOT AGAIN. NEVER AGIN.",
+  "Did you really think that would hold me?",
+  "Was that supposed to stop me?"
+]
+
+const capturedLines = [
+  "LET ME OUT!",
+  "THIS ISN'T THE LAST YOU SEEN OF ME!",
+  "I'VE ESCAPE ONCE! I DO IT AGAIN!",
+  "I...i can't see...",
+  "...",
+  "why"
+]
+
+const flagHints = [
+  {
+    flag: 1,
+    text: "hInT 1: sP3lL wItH 4B0Ut."
+  },
+  {
+    flag: 2,
+    text: "hInT 2: fInDiNg 0uT m0r3 wIlL h3lP wItH tHe FiLt3r."
+  },
+  {
+    flag: 3,
+    text: "hInT 3: tH0S3 4t 3nD 0F tHe LiN3S sH0UlD g0 aT tHe 3nD 0F tHe 4dDr3sS."
+  }
+]
+
 
 export default function FlagChecker({ toggleCookie }: Props) {
   const [flag1, setFlag1] = useState(false)
   const [flag2, setFlag2] = useState(false)
   const [flag3, setFlag3] = useState(false)
+  const [statusText, setStatusText] = useState("");
 
   const checkFlags = () => {
   const active = getCookie("toggleState") === "true"
+
 
   if (!active) {
     // 🔥 logical reset (ignore all flags)
@@ -57,38 +94,60 @@ export default function FlagChecker({ toggleCookie }: Props) {
     }
   }, [])
 
-  const capture = flag1 && flag2 && flag3
+  const [capture, setCapture] = useState(false)
+
+useEffect(() => {
+  setCapture(
+    getCookie("capture") === "true" ||
+    (flag1 && flag2 && flag3)
+  )
+}, [flag1, flag2, flag3])
+
+  const activeHints = flagHints.filter((hint) => {
+  if (hint.flag === 1) return !flag1
+  if (hint.flag === 2) return !flag2
+  if (hint.flag === 3) return !flag3
+  return false
+})
 
   const [showOverlay, setShowOverlay] = useState(false)
 
   useEffect(() => {
-    if (!capture) return
+  if (!capture) return
 
-    const alreadyCompleted = getCookie("capture") === "true"
-    if (alreadyCompleted) return
+  const alreadyCompleted = getCookie("capture") === "true"
 
-    // mark as completed (persist across reloads)
-    setCookie("capture", true, 365)
+  if (alreadyCompleted) return
 
-    // turn OFF evil mode (only if ON)
-    if (getCookie("toggleState") === "true") {
-      toggleCookie()
-    }
+  // Persist completion
+  setCookie("capture", true, 365)
 
-    // show overlay ONCE
-    setShowOverlay(true)
-  }, [capture, toggleCookie])
+  // Turn OFF evil mode if ON
+  if (getCookie("toggleState") === "true") {
+    toggleCookie()
+    setIsEvil(false)
+  }
+
+  // Show overlay
+  setShowOverlay(true)
+}, [capture, toggleCookie])
 
   const [isEvil, setIsEvil] = useState(false)
   useEffect(() => {
-    setIsEvil(getCookie("toggleState") === "true")
-  }, [])
+  const active = getCookie("toggleState") === "true"
+  setIsEvil(active)
+}, [])
 
   return (
     <div className="flex flex-col items-center mt-10 gap-4">
       {/* 🔥 STATUS TEXT */}
-      <p className="text-xs text-white/70 tracking-wide animate-pulse">{!capture && !isEvil ? "Press me" : !capture && isEvil ? "I'm Free" : "Release me at once"}</p>
-
+      <p className="text-xs text-white/70 tracking-wide animate-pulse">
+  {capture
+    ? capturedLines[Math.floor(Math.random() * capturedLines.length)]
+    : isEvil
+      ? statusText || preLine
+      : "Press the Button Below"}
+</p>
       {/* TOP */}
       <Light active={flag1} />
 
@@ -99,9 +158,26 @@ export default function FlagChecker({ toggleCookie }: Props) {
         {/* 🔥 CENTER (CLICKABLE) */}
         <button
           onClick={() => {
-            if (capture) return // ❌ cannot toggle after completion
-            toggleCookie()
-          }}
+  if (capture) return;
+
+  if (!isEvil) {
+    // Turn evil mode ON
+    toggleCookie();
+    setIsEvil(true);
+    setStatusText("I'm Free");
+
+  } else {
+    // Evil mode is already ON
+    const availableHints = activeHints.map((hint) => hint.text);
+
+    const allLines = [...releasedLines, ...availableHints];
+
+    const randomLine =
+      allLines[Math.floor(Math.random() * allLines.length)];
+
+    setStatusText(randomLine);
+  }
+}}
           className={`
           w-8 h-8 rounded-full border-2 flex items-center justify-center
           ${capture ? "bg-blue-500 shadow-[0_0_16px_6px_rgba(96,165,250,1)]" : "bg-gray-800 hover:scale-110"}
