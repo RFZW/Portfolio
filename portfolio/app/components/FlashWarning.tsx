@@ -6,7 +6,7 @@ type Props = {
 
 export default function FlashWarning({ onSelect }: Props) {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-6">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center opacity-90 bg-black/95 p-6">
       <div className="w-full max-w-md border border-red-500/40 bg-black p-8 text-center shadow-2xl">
 
         <div className="mb-4 text-4xl">⚠️</div>

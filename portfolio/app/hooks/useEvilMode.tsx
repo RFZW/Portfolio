@@ -22,7 +22,7 @@ function getCookie(name: string): string {
   return ""
 }
 
-export default function useEvilMode() {
+export default function useEvilMode(motionSensitive: boolean | null) {
   const [enabled, setEnabled] = useState(false)
   const [flicker, setFlicker] = useState(false)
   const [glitch, setGlitch] = useState(false)
@@ -48,44 +48,59 @@ export default function useEvilMode() {
   }, [enabled])
 
   // 🔥 Flicker effect
-  useEffect(() => {
-    if (!enabled) return
+useEffect(() => {
+  if (!enabled || motionSensitive !== false) {
+    setFlicker(false)
+    return
+  }
 
-    const trigger = () => {
-      setFlicker(true)
+  const trigger = () => {
+    setFlicker(true)
 
-      setTimeout(() => setFlicker(false), 120)
+    flickerTimeout.current = setTimeout(() => {
+      setFlicker(false)
 
       const next = Math.random() * 2000 + 100
       flickerTimeout.current = setTimeout(trigger, next)
-    }
+    }, 120)
+  }
 
-    trigger()
+  trigger()
 
-    return () => {
-      if (flickerTimeout.current) clearTimeout(flickerTimeout.current)
+  return () => {
+    if (flickerTimeout.current) {
+      clearTimeout(flickerTimeout.current)
     }
-  }, [enabled])
+  }
+}, [enabled, motionSensitive])
+
 
   // 🔥 Glitch effect
-  useEffect(() => {
-    if (!enabled) return
+useEffect(() => {
+  if (!enabled || motionSensitive !== false) {
+    setGlitch(false)
+    return
+  }
 
-    const trigger = () => {
-      setGlitch(true)
+  const trigger = () => {
+    setGlitch(true)
 
-      setTimeout(() => setGlitch(false), 150)
+    glitchTimeout.current = setTimeout(() => {
+      setGlitch(false)
 
       const next = Math.random() * 2000 + 1000
       glitchTimeout.current = setTimeout(trigger, next)
-    }
+    }, 150)
+  }
 
-    trigger()
+  trigger()
 
-    return () => {
-      if (glitchTimeout.current) clearTimeout(glitchTimeout.current)
+  return () => {
+    if (glitchTimeout.current) {
+      clearTimeout(glitchTimeout.current)
     }
-  }, [enabled])
+  }
+}, [enabled, motionSensitive])
 
   const toggle = () => {
     const newState = !enabled

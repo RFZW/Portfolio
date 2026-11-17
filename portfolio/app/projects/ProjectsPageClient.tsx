@@ -13,6 +13,8 @@ import GlitchText from "../components/GlitchText"
 import FlagChecker from "../components/FlagChecker"
 import { Project } from "../../lib/getProjects"
 import { MediaComments } from "../../lib/getMediaComments"
+import useMotionPreference from "../hooks/useMotionPreference"
+import FlashWarning from "../components/FlashWarning"
 
 type SkillCategory = {
   _id: string
@@ -21,7 +23,18 @@ type SkillCategory = {
 }
 
 export default function ProjectsPageClient({ skills, projects, mediaComments }: { skills: SkillCategory[]; projects: Project[]; mediaComments: MediaComments }) {
-  const { enabled: cookieState, flicker, glitch, toggle: toggleCookie } = useEvilMode()
+  const {
+      sensitive,
+      updatePreference,
+      showOverlay
+    } = useMotionPreference()
+
+  const {
+      enabled: cookieState,
+      flicker,
+      glitch,
+      toggle: toggleCookie
+    } = useEvilMode(sensitive)
 
   const [selectedProject, setSelectedProject] = useState(projects[0] || null)
 
@@ -91,11 +104,17 @@ export default function ProjectsPageClient({ skills, projects, mediaComments }: 
   }, [filteredProjects])
 
   return (
-    <div
-      className={`bg-primary text-text font-sans 
-  ${cookieState ? "evil-mode" : ""} 
-  ${flicker ? "evil-flicker" : ""} 
-  ${glitch ? "glitch" : ""}`}
+    <>
+    {/* Motion Warning */}
+        {showOverlay && (
+          <FlashWarning onSelect={updatePreference} />
+        )}
+    
+        <div
+          className={`bg-primary text-text font-sans 
+          ${cookieState ? "evil-mode" : ""} 
+          ${flicker ? "evil-flicker" : ""} 
+          ${glitch ? "glitch" : ""}`}
     >
       {/* NAVBAR */}
       <Navbar cookieState={cookieState} toggleCookie={toggleCookie} />
@@ -172,7 +191,9 @@ export default function ProjectsPageClient({ skills, projects, mediaComments }: 
         <div className="max-w-3xl mx-auto w-full px-6 text-center">
           <h2 className="text-4xl font-bold mb-8 text-accent">Contact</h2>
 
-          <GlitchText evilMode={cookieState} normalText="Feel free to reach out for opportunities, collaborations, or just a chat." glitchTexts={["To keep the creature at bay, \nThree Steps must take for it to light the way. \nFrom the hos7, \nThe LockandKey are spelt to trap them in their plac3.\nWhen Tailwind React and Postman is reached, \nthe Filter must be applied for it to take.\nThe Final address shrouded in plain sight; \nWith the end being the Key.\nThree lights aflam3.\nOnly then can the beast be sealed away.", "T0 k3ep the creature 4t bay, \nThree 5teps must tak3 for 1t t0 l1gh7 the way. \nFr0m the h057, \nThe LockandKey are 5p3lt t0 7rap th3m 1n th31r pl4c3.\nWh3n 741lw1nd Re4c7 4nd P05tm4n is r3ached, \nthe F1l7er mus7 b3 4ppli3d f0r 1t t0 7ake. \nThe F1n4l 4ddre5s 5hroud 1n pl4in 5igh7; \nWith the 3nd being 7h3 K3y.\nThre3 l1ght5 aflam3. \n0nly then c4n th3 8ea57 b3 5e413d 4w4y."]} />
+          <GlitchText
+  evilMode={cookieState}
+  motionSensitive={sensitive} normalText="Feel free to reach out for opportunities, collaborations, or just a chat." glitchTexts={["To keep the creature at bay, \nThree Steps must take for it to light the way. \nFrom the hos7, \nThe LockandKey are spelt to trap them in their plac3.\nWhen Tailwind React and Postman is reached, \nthe Filter must be applied for it to take.\nThe Final address shrouded in plain sight; \nWith the end being the Key.\nThree lights aflam3.\nOnly then can the beast be sealed away.", "T0 k3ep the creature 4t bay, \nThree 5teps must tak3 for 1t t0 l1gh7 the way. \nFr0m the h057, \nThe LockandKey are 5p3lt t0 7rap th3m 1n th31r pl4c3.\nWh3n 741lw1nd Re4c7 4nd P05tm4n is r3ached, \nthe F1l7er mus7 b3 4ppli3d f0r 1t t0 7ake. \nThe F1n4l 4ddre5s 5hroud 1n pl4in 5igh7; \nWith the 3nd being 7h3 K3y.\nThre3 l1ght5 aflam3. \n0nly then c4n th3 8ea57 b3 5e413d 4w4y."]} />
           
           {/* EMAIL */}
           <div className="mb-8">
@@ -235,8 +256,9 @@ export default function ProjectsPageClient({ skills, projects, mediaComments }: 
       </section>
       <EvilFilter tools={appliedFilters.tools} evilMode={cookieState} />
       <div className="p-8">
-        <FlagChecker toggleCookie={toggleCookie} />
+        <FlagChecker toggleCookie={toggleCookie} motionSensitive={sensitive} />
       </div>
     </div>
+    </>
   )
 }

@@ -1,9 +1,11 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
 
 export default function useMotionPreference() {
   const [sensitive, setSensitive] = useState<boolean | null>(null)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const match = document.cookie
@@ -12,9 +14,9 @@ export default function useMotionPreference() {
 
     if (match) {
       setSensitive(match.split("=")[1] === "true")
-    } else {
-      setSensitive(null)
     }
+
+    setLoaded(true)
   }, [])
 
   const updatePreference = (value: boolean) => {
@@ -27,6 +29,6 @@ export default function useMotionPreference() {
   return {
     sensitive,
     updatePreference,
-    showOverlay: sensitive === null
+    showOverlay: loaded && sensitive === null
   }
 }

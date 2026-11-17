@@ -6,6 +6,7 @@ import { release } from "os"
 
 type Props = {
   toggleCookie: () => void
+  motionSensitive: boolean | null
 }
 
 function Light({ active }: { active: boolean }) {
@@ -59,7 +60,10 @@ const flagHints = [
 ]
 
 
-export default function FlagChecker({ toggleCookie }: Props) {
+export default function FlagChecker({
+  toggleCookie,
+  motionSensitive
+}: Props) {
   const [flag1, setFlag1] = useState(false)
   const [flag2, setFlag2] = useState(false)
   const [flag3, setFlag3] = useState(false)
@@ -94,14 +98,9 @@ export default function FlagChecker({ toggleCookie }: Props) {
     }
   }, [])
 
-  const [capture, setCapture] = useState(false)
-
-useEffect(() => {
-  setCapture(
-    getCookie("capture") === "true" ||
-    (flag1 && flag2 && flag3)
-  )
-}, [flag1, flag2, flag3])
+  const capture =
+  getCookie("capture") === "true" ||
+  (flag1 && flag2 && flag3)
 
   const activeHints = flagHints.filter((hint) => {
   if (hint.flag === 1) return !flag1
@@ -145,8 +144,8 @@ useEffect(() => {
   {capture
     ? capturedLines[Math.floor(Math.random() * capturedLines.length)]
     : isEvil
-      ? statusText || preLine
-      : "Press the Button Below"}
+      ? statusText || releasedLines[Math.floor(Math.random() * releasedLines.length)]
+      : preLine}
 </p>
       {/* TOP */}
       <Light active={flag1} />
