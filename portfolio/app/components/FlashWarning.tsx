@@ -21,7 +21,7 @@ export default function FlashWarning({ onSelect }: Props) {
 
           <br /><br />
 
-          Are you sensitive to flashing lights or visual effects?
+          Those who are sensitive to such triggers should disable the effects.
         </p>
 
         <div className="flex flex-col gap-3">
@@ -29,14 +29,14 @@ export default function FlashWarning({ onSelect }: Props) {
             onClick={() => onSelect(true)}
             className="w-full border border-green-500/50 bg-green-950/30 px-5 py-3 text-sm text-green-400 transition hover:bg-green-900/50"
           >
-            YES — Disable visual effects
+            Proceed
           </button>
 
           <button
             onClick={() => onSelect(false)}
             className="w-full border border-red-500/50 bg-red-950/30 px-5 py-3 text-sm text-red-400 transition hover:bg-red-900/50"
           >
-            NO — Continue with visual effects
+             Disable visual effects
           </button>
         </div>
 
